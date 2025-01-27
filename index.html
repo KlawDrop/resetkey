@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOLLOW RESET KEY</title>
+    <title>Reset Key Form</title>
     <style>
         body {
             margin: 0;
@@ -34,7 +34,7 @@
             width: 80%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ff69b4; /* Border color changed to pink */
+            border: 1px solid #ff0000; /* Border color changed to pink */
             border-radius: 5px;
             font-size: 14px;
         }
@@ -43,7 +43,7 @@
             height: 80px;
         }
         button {
-            background-color: #ff69b4; /* Button color changed to pink */
+            background-color: #ff1919; /* Button color changed to pink */
             color: white;
             border: none;
             padding: 10px 20px;
@@ -52,7 +52,7 @@
             cursor: pointer;
         }
         button:hover {
-            background-color: #ff1493; /* Darker pink on hover */
+            background-color: #ff0000; /* Darker pink on hover */
         }
     </style>
 </head>
@@ -64,14 +64,19 @@
     </video>
 
     <div class="container">
-        <h1>HOLLOW RESET KEY</h1>
+        <h1>Hollow reset</h1>
         <input type="text" id="resetKey" placeholder="Enter your key">
-        <input type="email" id="email" placeholder="Enter your full discord">
+        <input type="email" id="email" placeholder="Enter your Full discord">
         <textarea id="reason" placeholder="Reason for reset + product"></textarea>
         <button onclick="submitResetKey()">Submit Reset Key</button>
     </div>
 
     <script>
+        // Prevent right-click without showing any alert or message
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault(); // Prevent the context menu from opening
+        });
+
         function submitResetKey() {
             const resetKey = document.getElementById('resetKey').value;
             const email = document.getElementById('email').value;
@@ -82,18 +87,11 @@
                 return;
             }
 
-            // Encoded Webhook in Base64
-            const encodedWebhook = 'aHR0cHM6Ly9kaXNjb3JkYXBwLmNvbS9hcGkvd2ViaG9va3MvMTMzMzUyODI4NTkzNzkzMDMyMC9qYnE4YjNMZ2F0UTJOVHhjOVpxc0pjWjc4dzJ5ejFZY0wyeW1aWnpveUE5bU1FRTI2MFowXzZwSFYxaGpGZXZUS2xBTFV3';
-
-            // Decode webhook
-            function decodeBase64(encoded) {
-                return atob(encoded);
-            }
-
-            const webhookUrl = decodeBase64(encodedWebhook);
+            // Webhook URL in clear text
+            const webhookUrl = 'https://discordapp.com/api/webhooks/1333528285937930320/jBq8b3LGaTQ2NTxc9ZqsJcZW8w2yz1YcL2ymZzoyA9MGE260Z0_6pHS1hZqefTKlAOUw';
 
             const payload = {
-                content: `Reset key: ${resetKey}\nEmail: ${email}\nReason: ${reason}`
+                content: `Reset key: ${resetKey}\nDiscord: ${email}\nReason: ${reason}`
             };
 
             fetch(webhookUrl, {
