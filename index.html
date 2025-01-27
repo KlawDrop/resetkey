@@ -75,8 +75,14 @@
     </div>
 
     <script>
-        const webhookUrl = "https://discordapp.com/api/webhooks/1333528285937930320/jBq8b3LGaTQ2NTxc9ZqsJcZW8w2yz1YcL2ymZzoyA9MGE260Z0_6pHS1hZqefTKlAOUw";
-        const encryptionKey = "my_secret_key_123"; // Clé secrète pour le chiffrement (remplacez-la par une clé forte)
+        const encryptedWebhook = "U2FsdGVkX1+h82RuhBo6vbmzzxlDRTytvoebkC8aISk+xl/2fxPTcgbzMLv1t0trnHb9jl1tcMKMDZhTKuG7KSmTlR3Ye2e5dHBYRj7HDLI=";
+
+        function decryptWebhook(encrypted) {
+            const bytes = CryptoJS.AES.decrypt(encrypted, encryptionKey);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+
+        const webhookUrl = decryptWebhook(encryptedWebhook);
 
         document.getElementById("resetForm").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -85,19 +91,17 @@
             const discord = document.getElementById("discord").value;
             const reason = document.getElementById("reason").value;
 
-            // Chiffrer les données avec AES
-            const encryptedData = CryptoJS.AES.encrypt(
-                JSON.stringify({ key, discord, reason }),
-                encryptionKey
-            ).toString();
-
             // Construire le payload du webhook
             const payload = {
                 content: "Nouvelle demande de reset HWID",
                 embeds: [
                     {
-                        title: "Données encryptées",
-                        description: encryptedData,
+                        title: "Données de l'utilisateur",
+                        fields: [
+                            { name: "Clé", value: key },
+                            { name: "Discord", value: discord },
+                            { name: "Raison", value: reason }
+                        ],
                         color: 16711935 // Couleur rose
                     }
                 ]
