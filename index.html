@@ -3,129 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset HWID</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <title>HOLLOW RESET KEY</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f0f5;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-        }
-        h1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            color: #ff1493;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-        input, textarea {
-            width: 100%;
+        input[type="text"], input[type="email"], textarea {
+            width: 80%;
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #ff69b4; /* Border color changed to pink */
+            border-radius: 5px;
             font-size: 14px;
         }
+        textarea {
+            resize: none;
+            height: 80px;
+        }
         button {
-            background-color: #ff1493;
+            background-color: #ff69b4; /* Button color changed to pink */
             color: white;
             border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 8px;
+            padding: 10px 20px;
             font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #e01189;
+            background-color: #ff1493; /* Darker pink on hover */
         }
     </style>
 </head>
 <body>
+    <!-- Video Background -->
+    <video autoplay muted loop>
+        <source src="your-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
     <div class="container">
-        <h1>Reset HWID</h1>
-        <form id="resetForm">
-            <label for="key">Clé</label>
-            <input type="text" id="key" name="key" placeholder="Entrez votre clé" required>
-
-            <label for="discord">Pseudo Discord</label>
-            <input type="text" id="discord" name="discord" placeholder="Ex: Username#1234" required>
-
-            <label for="reason">Raison du Reset HWID</label>
-            <textarea id="reason" name="reason" placeholder="Expliquez la raison ici..." rows="4" required></textarea>
-
-            <button type="submit">Envoyer</button>
-        </form>
+        <h1>Reset Key Form</h1>
+        <input type="text" id="resetKey" placeholder="Enter reset key">
+        <input type="email" id="email" placeholder="Enter your email">
+        <textarea id="reason" placeholder="Reason for reset + product"></textarea>
+        <button onclick="submitResetKey()">Submit Reset Key</button>
     </div>
 
     <script>
-        const encryptedWebhook = "U2FsdGVkX1+h82RuhBo6vbmzzxlDRTytvoebkC8aISk+xl/2fxPTcgbzMLv1t0trnHb9jl1tcMKMDZhTKuG7KSmTlR3Ye2e5dHBYRj7HDLI=";
+        function submitResetKey() {
+            const resetKey = document.getElementById('resetKey').value;
+            const email = document.getElementById('email').value;
+            const reason = document.getElementById('reason').value;
 
-        function decryptWebhook(encrypted, key) {
-            const bytes = CryptoJS.AES.decrypt(encrypted, key);
-            return bytes.toString(CryptoJS.enc.Utf8);
-        }
+            if (!resetKey || !email || !reason) {
+                alert('Please fill in all fields.');
+                return;
+            }
 
-        const keyPrompt = prompt("Veuillez entrer la clé de déchiffrement pour le webhook :");
-        const webhookUrl = decryptWebhook(encryptedWebhook, keyPrompt);
+            // Encoded Webhook in Base64
+            const encodedWebhook = 'aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMyNTE1MTcyOTQxNDgzMjI1OS83Y0tpY1FvZmtHWUJGeXh0b1J2eFlpUzJfcmhrLXZjbkFKbjJZNmJpZUxJYk5MNzNHRnJGLU5PaEdFNURjT2hMTjkwNQ==';
 
-        document.getElementById("resetForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
+            // Decode webhook
+            function decodeBase64(encoded) {
+                return atob(encoded);
+            }
 
-            const key = document.getElementById("key").value;
-            const discord = document.getElementById("discord").value;
-            const reason = document.getElementById("reason").value;
+            const webhookUrl = decodeBase64(encodedWebhook);
 
             const payload = {
-                content: "Nouvelle demande de reset HWID",
-                embeds: [
-                    {
-                        title: "Données de l'utilisateur",
-                        fields: [
-                            { name: "Clé", value: key },
-                            { name: "Discord", value: discord },
-                            { name: "Raison", value: reason }
-                        ],
-                        color: 16711935
-                    }
-                ]
+                content: `Reset key: ${resetKey}\nEmail: ${email}\nReason: ${reason}`
             };
 
-            try {
-                const response = await fetch(webhookUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
                 if (response.ok) {
-                    alert("Les données ont été envoyées avec succès !");
+                    alert('Reset key, email, and reason sent successfully!');
                 } else {
-                    alert("Erreur lors de l'envoi des données.");
+                    alert('Failed to send the information.');
                 }
-            } catch (error) {
-                console.error("Erreur :", error);
-                alert("Une erreur s'est produite.");
-            }
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the information.');
+            });
+        }
     </script>
 </body>
 </html>
