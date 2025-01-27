@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset HWID</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f0f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #ff1493;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #ff1493;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #e01189;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reset HWID</h1>
+        <form id="resetForm">
+            <label for="key">Clé</label>
+            <input type="text" id="key" name="key" placeholder="Entrez votre clé" required>
+
+            <label for="discord">Pseudo Discord</label>
+            <input type="text" id="discord" name="discord" placeholder="Ex: Username#1234" required>
+
+            <label for="reason">Raison du Reset HWID</label>
+            <textarea id="reason" name="reason" placeholder="Expliquez la raison ici..." rows="4" required></textarea>
+
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+
+    <script>
+        const webhookUrl = "https://discordapp.com/api/webhooks/1333528285937930320/jBq8b3LGaTQ2NTxc9ZqsJcZW8w2yz1YcL2ymZzoyA9MGE260Z0_6pHS1hZqefTKlAOUw";
+        const encryptionKey = "my_secret_key_123"; // Clé secrète pour le chiffrement (remplacez-la par une clé forte)
+
+        document.getElementById("resetForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const key = document.getElementById("key").value;
+            const discord = document.getElementById("discord").value;
+            const reason = document.getElementById("reason").value;
+
+            // Chiffrer les données avec AES
+            const encryptedData = CryptoJS.AES.encrypt(
+                JSON.stringify({ key, discord, reason }),
+                encryptionKey
+            ).toString();
+
+            // Construire le payload du webhook
+            const payload = {
+                content: "Nouvelle demande de reset HWID",
+                embeds: [
+                    {
+                        title: "Données encryptées",
+                        description: encryptedData,
+                        color: 16711935 // Couleur rose
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert("Les données ont été envoyées avec succès !");
+                } else {
+                    alert("Erreur lors de l'envoi des données.");
+                }
+            } catch (error) {
+                console.error("Erreur :", error);
+                alert("Une erreur s'est produite.");
+            }
+        });
+    </script>
+</body>
+</html>
